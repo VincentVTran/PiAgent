@@ -18,9 +18,10 @@ option go_package = "github.com/vincentvtran/homeserver/proto";
 
 package homeserver.proto;
 
-// The greeting service definition.
+/**
+ * Service API definition
+ */
 service HomeService {
-  // Sends a greeting
   rpc invoke(OperationRequest) returns (OperationResponse) {}
 }
 
