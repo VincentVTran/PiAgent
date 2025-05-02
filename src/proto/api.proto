@@ -21,14 +21,25 @@ package homeserver.proto;
 // The greeting service definition.
 service HomeService {
   // Sends a greeting
-  rpc Version(VersionRequest) returns (VersionResponse) {}
+  rpc invoke(OperationRequest) returns (OperationResponse) {}
 }
 
-// The request message containing the user's name.
-message VersionRequest {
+/**
+ * Operation request and response objects
+ */
+message OperationRequest {
+  string user_id = 1;
+  OperationParameter param = 2;
 }
 
-// The response message containing the greetings
-message VersionResponse {
-  string version = 1;
+message OperationResponse {
+  string api_version = 1;
+  string output = 2;
+}
+
+/**
+ * Operation input parameter object
+ */
+ message OperationParameter {
+  string payload = 1;
 }

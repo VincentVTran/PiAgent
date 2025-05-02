@@ -25,7 +25,7 @@ import (
 	"log"
 	"time"
 
-	pb "github.com/vincentvtran/homeserver/proto"
+	pb "github.com/vincentvtran/homeserver/src/proto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
@@ -47,9 +47,12 @@ func main() {
 	// Contact the server and print out its response.
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
-	r, err := c.Version(ctx, &pb.VersionRequest{})
+	request := &pb.OperationRequest{
+		Param: &pb.OperationParameter{},
+	}
+	r, err := c.Invoke(ctx, request)
 	if err != nil {
 		log.Fatalf("Could not reach server: %v", err)
 	}
-	log.Printf("Server is currently set to version: %s", r.GetVersion())
+	log.Printf("Server is currently set to version: %s", r.ApiVersion)
 }

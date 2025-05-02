@@ -26,7 +26,7 @@ import (
 	"log"
 	"net"
 
-	pb "github.com/vincentvtran/homeserver/proto"
+	pb "github.com/vincentvtran/homeserver/src/proto"
 	"google.golang.org/grpc"
 )
 
@@ -41,9 +41,10 @@ type server struct {
 }
 
 // Version implements apiHome
-func (s *server) Version(ctx context.Context, in *pb.VersionRequest) (*pb.VersionResponse, error) {
-	log.Printf("Received connection from client")
-	return &pb.VersionResponse{Version: s.version}, nil
+func (s *server) Invoke(ctx context.Context, in *pb.OperationRequest) (*pb.OperationResponse, error) {
+	log.Println("Received connection from client")
+	log.Println("Client request: ", in)
+	return &pb.OperationResponse{ApiVersion: s.version}, nil
 }
 
 func main() {
