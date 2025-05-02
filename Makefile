@@ -4,13 +4,13 @@ SERVER_ADDRESS ?= 0.0.0.0
 PORT_NUMBER ?= 50051
 
 rebuild-proto:
-	protoc --go-grpc_out=. --go-grpc_opt=paths=source_relative --go_out=. --go_opt=paths=source_relative src/proto/api.proto
+	protoc --go-grpc_out=. --go-grpc_opt=paths=source_relative --go_out=. --go_opt=paths=source_relative api/types/api.proto
 
 start-server:
-	go run src/server/main.go --port $(PORT_NUMBER)
+	go run cmd/home-server/main.go --port $(PORT_NUMBER)
 
 start-client:
-	go run src/client/main.go --server-address $(SERVER_ADDRESS):$(PORT_NUMBER)
+	go run example/test/client_main.go --server-address $(SERVER_ADDRESS):$(PORT_NUMBER)
 
 # Build the Docker image
 build:

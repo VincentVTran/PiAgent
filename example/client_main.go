@@ -25,7 +25,7 @@ import (
 	"log"
 	"time"
 
-	pb "github.com/vincentvtran/homeserver/src/proto"
+	pb "github.com/vincentvtran/homeserver/api/types"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )

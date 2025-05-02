@@ -16,7 +16,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.5.1
 // - protoc             v6.30.2
-// source: src/proto/api.proto
+// source: api/types/api.proto
 
 package proto
 
@@ -137,5 +137,5 @@ var HomeService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "src/proto/api.proto",
+	Metadata: "api/types/api.proto",
 }
