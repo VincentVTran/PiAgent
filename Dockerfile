@@ -12,7 +12,7 @@ RUN go mod download
 COPY . .
 
 # Build the gRPC server
-RUN go build -o server ./src/server/main.go
+RUN go build -o server ./cmd/home-server/main.go
 
 # Expose the gRPC server port
 EXPOSE 50051
