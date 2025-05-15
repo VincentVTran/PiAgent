@@ -30,7 +30,7 @@ service PiAgentController {
  */
 message StreamRequest {
   string client_id = 1;
-  StreamParameter parameter = 2;
+  StreamParameter parameters = 2;
 }
 
 message StreamParameter {
@@ -42,8 +42,4 @@ message OperationResponse {
   int32 status_code = 2;
   string output = 3;
 }
-
-/**
- * Operation input parameter object
- */
 

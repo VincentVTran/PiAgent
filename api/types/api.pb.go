@@ -40,7 +40,7 @@ const (
 type StreamRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	ClientId      string                 `protobuf:"bytes,1,opt,name=client_id,json=clientId,proto3" json:"client_id,omitempty"`
-	Parameter     *StreamParameter       `protobuf:"bytes,2,opt,name=parameter,proto3" json:"parameter,omitempty"`
+	Parameters    *StreamParameter       `protobuf:"bytes,2,opt,name=parameters,proto3" json:"parameters,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -82,9 +82,9 @@ func (x *StreamRequest) GetClientId() string {
 	return ""
 }
 
-func (x *StreamRequest) GetParameter() *StreamParameter {
+func (x *StreamRequest) GetParameters() *StreamParameter {
 	if x != nil {
-		return x.Parameter
+		return x.Parameters
 	}
 	return nil
 }
@@ -197,10 +197,12 @@ var File_api_types_api_proto protoreflect.FileDescriptor
 
 const file_api_types_api_proto_rawDesc = "" +
 	"\n" +
-	"\x13api/types/api.proto\x12\x10homeserver.proto\"m\n" +
+	"\x13api/types/api.proto\x12\x10homeserver.proto\"o\n" +
 	"\rStreamRequest\x12\x1b\n" +
-	"\tclient_id\x18\x01 \x01(\tR\bclientId\x12?\n" +
-	"\tparameter\x18\x02 \x01(\v2!.homeserver.proto.StreamParameterR\tparameter\")\n" +
+	"\tclient_id\x18\x01 \x01(\tR\bclientId\x12A\n" +
+	"\n" +
+	"parameters\x18\x02 \x01(\v2!.homeserver.proto.StreamParameterR\n" +
+	"parameters\")\n" +
 	"\x0fStreamParameter\x12\x16\n" +
 	"\x06enable\x18\x01 \x01(\bR\x06enable\"m\n" +
 	"\x11OperationResponse\x12\x1f\n" +
@@ -231,7 +233,7 @@ var file_api_types_api_proto_goTypes = []any{
 	(*OperationResponse)(nil), // 2: homeserver.proto.OperationResponse
 }
 var file_api_types_api_proto_depIdxs = []int32{
-	1, // 0: homeserver.proto.StreamRequest.parameter:type_name -> homeserver.proto.StreamParameter
+	1, // 0: homeserver.proto.StreamRequest.parameters:type_name -> homeserver.proto.StreamParameter
 	0, // 1: homeserver.proto.PiAgentController.configureStream:input_type -> homeserver.proto.StreamRequest
 	2, // 2: homeserver.proto.PiAgentController.configureStream:output_type -> homeserver.proto.OperationResponse
 	2, // [2:3] is the sub-list for method output_type

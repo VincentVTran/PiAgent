@@ -1,6 +1,6 @@
 package config
 
-var ApplicationConfig struct {
+type ApplicationConfig struct {
 	Local struct {
 		RabbitMQLink string `json:"rabbitMQLink"`
 		Exchange     string `json:"exchange"`

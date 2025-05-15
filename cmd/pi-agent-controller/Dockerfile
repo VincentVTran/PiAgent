@@ -15,7 +15,7 @@ COPY ../../../ ./
 RUN go build -o pi-agent-controller ./cmd/pi-agent-controller/main.go
 
 # Expose the gRPC server port
-EXPOSE 50052
+EXPOSE 5005
 
 # Command to run the gRPC server
 CMD ["./pi-agent-controller"]

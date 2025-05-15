@@ -12,10 +12,10 @@ RUN go mod download
 COPY ../../../ ./
 
 # Build the gRPC server
-RUN go build -o home-server ./cmd/home-server/main.go
+RUN go build -o pi-agent-controller-processor ./cmd/pi-agent-controller-processor/main.go
 
 # Expose the gRPC server port
-EXPOSE 5005
+EXPOSE 50052
 
 # Command to run the gRPC server
-CMD ["./home-server"]
+CMD ["./pi-agent-controller-processor"]
