@@ -27,13 +27,13 @@ go run cmd/home-server/main.go --stage="local" --port=$HOME_PORT &
 HOME_PID=$!
 echo "Home server started with PID $HOME_PID on port $HOME_PORT"
 
-# Start pi-server in the background
+# Start pi-agent in the background
 go run cmd/pi-agent/main.go --stage="local" --port=$PI_PORT &
 PI_PID=$!
 echo "Pi server started with PID $PI_PID on port $PI_PORT"
 
 # Start the queue-ingestor-service in the foreground
-go run cmd/queue-ingestor-server/main.go --stage="local" --server-address dev-desktop.vt:$PI_PORT
+go run cmd/pi-agent-controller/main.go --stage="local" --server-address dev-desktop.vt:$PI_PORT
 echo "Queue ingestor service started on dev-desktop.vt:$PI_PORT"
 
 # Wait for the foreground process to complete

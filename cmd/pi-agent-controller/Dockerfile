@@ -12,10 +12,10 @@ RUN go mod download
 COPY ../../../ ./
 
 # Build the gRPC server
-RUN go build -o queue-ingestor-server ./cmd/queue-ingestor-server/main.go
+RUN go build -o pi-agent-controller ./cmd/pi-agent-controller/main.go
 
 # Expose the gRPC server port
 EXPOSE 50052
 
 # Command to run the gRPC server
-CMD ["./queue-ingestor-server"]
+CMD ["./pi-agent-controller"]

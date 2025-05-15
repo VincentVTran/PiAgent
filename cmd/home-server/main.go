@@ -104,8 +104,6 @@ func publishToExchange(url string, payload Payload) error {
 	if err != nil {
 		return fmt.Errorf("failed to publish a message: %v", err)
 	}
-
-	log.Printf("Message published to exchange %s with routing key %s: %v", config.ApplicationConfig.RabbitMQ.Exchange, config.ApplicationConfig.RabbitMQ.RoutingKey, payload)
 	return nil
 }
 

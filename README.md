@@ -1,7 +1,13 @@
 ## HomeServer
+#### Component Overview
+- pi-agent-controller = gRPC server hosted on a k8 cluster that interacts with pi-agent
+- pi-agent = gRPC client that is installed onto raspberry pi. Purpose is to listen to controller and handles on-system functionalities
 
-#### To init mod
+#### To init mod (Fresh build)
 ```go mod init github.com/vincentvtran/genagent```
+
+#### To build from pre-existing mod file
+```make build-local```
 
 #### Installing dependencies
 - Used ```go get```
@@ -14,11 +20,9 @@
 #### Generating proto into go file
 - For gRPC framework proto: 
 ```
-protoc --go-grpc_out=. --go-grpc_opt=paths=source_relative proto/agent.proto
+make build-proto
 ```
-- For response/request object setter and getter proto: ```protoc --go-grpc_out=. --go-grpc_opt=paths=source_relative --go_out=. --go_opt=paths=source_relative proto/api.proto```
 
-
-#### Running gRPC server
-- Running server: ```go run server/main.go```
-- Running client: ```go run client/main.go```
+#### Running application locally
+- Running with local compiler: ```make test-local```
+- Running with local container: ```make run-all```

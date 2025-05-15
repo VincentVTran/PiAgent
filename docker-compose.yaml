@@ -11,24 +11,24 @@ services:
     environment:
       - STAGE=local
 
-  pi-server:
+  pi-agent:
     build:
       context: .
       dockerfile: cmd/pi-agent/Dockerfile
     ports:
       - "50051:50051"
-    container_name: pi-server
+    container_name: pi-agent
     environment:
       - STAGE=local
 
-  queue-ingestor-server:
+  pi-agent-controller:
     build:
       context: .
-      dockerfile: cmd/queue-ingestor-server/Dockerfile
+      dockerfile: cmd/pi-agent-controller/Dockerfile
     ports:
       - "50052:50052"
-    container_name: queue-ingestor-server
+    container_name: pi-agent-controller
     depends_on:
-      - pi-server
+      - pi-agent
     environment:
       - STAGE=local

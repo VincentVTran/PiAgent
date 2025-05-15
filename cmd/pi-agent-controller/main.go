@@ -6,10 +6,12 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"os"
 	"time"
 
 	amqp "github.com/rabbitmq/amqp091-go"
 	pb "github.com/vincentvtran/homeserver/api/types"
+	config "github.com/vincentvtran/homeserver/pkg/model"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
@@ -27,17 +29,29 @@ var (
 	rabbitURL string
 )
 
+func loadConfig() {
+	file, err := os.Open("config/application-config.json")
+	if err != nil {
+		log.Fatalf("Failed to open config file: %v", err)
+	}
+	defer file.Close()
+
+	decoder := json.NewDecoder(file)
+	if err := decoder.Decode(&config.ApplicationConfig); err != nil {
+		log.Fatalf("Failed to decode config file: %v", err)
+	}
+}
+
 func determineRabbitMQURL() {
 	switch *stage {
 	case "local":
-		rabbitURL = "amqp://admin:admin-ui-password@192.168.2.4:5672/"
+		rabbitURL = config.ApplicationConfig.RabbitMQ.Local
 		log.Println("Using local RabbitMQ URL")
 	case "prod":
-		rabbitURL = "amqp://admin:admin-ui-password@rabbitmq.rabbitmq.service.cluster.local:5672/"
+		rabbitURL = config.ApplicationConfig.RabbitMQ.Prod
 		log.Println("Using cluster RabbitMQ URL")
 	default:
-		rabbitURL = "amqp://admin:admin-ui-password@rabbitmq.rabbitmq.service.cluster.local:5672/"
-		log.Printf("Using RabbitMQ URL for stage '%s'", *stage)
+		log.Fatalf("RabbitMQ URL for stage '%s' not found in config", *stage)
 	}
 }
 
@@ -58,13 +72,13 @@ func consumeFromRabbitMQ(url, queue string) error {
 
 	// Consume messages from the queue
 	msgs, err := ch.Consume(
-		queue,         // queue
-		"test-client", // consumer
-		true,          // auto-ack
-		false,         // exclusive
-		false,         // no-local (deprecated in amqp091-go)
-		false,         // no-wait
-		nil,           // args
+		queue,                 // queue
+		"pi-agent-controller", // consumer
+		true,                  // auto-ack
+		false,                 // exclusive
+		false,                 // no-local (deprecated in amqp091-go)
+		false,                 // no-wait
+		nil,                   // args
 	)
 	if err != nil {
 		return fmt.Errorf("failed to register a consumer: %v", err)
@@ -91,6 +105,9 @@ func consumeFromRabbitMQ(url, queue string) error {
 
 func main() {
 	flag.Parse()
+
+	// Load configuration
+	loadConfig()
 
 	// Set up a connection to the server.
 	conn, err := grpc.NewClient(*addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
