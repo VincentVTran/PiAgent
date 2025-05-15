@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pi-agent-controller
+  namespace: pi-agent
+  labels:
+    app: pi-agent-controller
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pi-agent-controller
+  template:
+    metadata:
+      labels:
+        app: pi-agent-controller
+    spec:
+      containers:
+      - name: pi-agent-controller
+        image: pi-agent-controller:latest
+        ports:
+        - containerPort: 50052
+        resources:
+          limits:
+            memory: "256Mi"
+            cpu: "500m"
+          requests:
+            memory: "128Mi"
+            cpu: "250m"
+        env:
+        - name: STAGE
+          value: "prod"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pi-agent-controller-service
+  namespace: pi-agent
+spec:
+  type: LoadBalancer
+  selector:
+    app: pi-agent-controller
+  ports:
+  - protocol: TCP
+    port: 50052
+    targetPort: 50052

@@ -14,10 +14,12 @@ import (
 )
 
 var (
-	port      = flag.Int("port", 5005, "The gRPC server port")
-	stage     = flag.String("stage", "local", "Stage for RabbitMQ URL (e.g., local or production)")
-	rabbitURL string
-	upgrader  = websocket.Upgrader{CheckOrigin: func(r *http.Request) bool { return true }}
+	port             = flag.Int("port", 5005, "The gRPC server port")
+	stage            = flag.String("stage", "local", "Stage for RabbitMQ URL (e.g., local or production)")
+	rabbitURL        string
+	rabbitExchange   string
+	rabbitRoutingKey string
+	upgrader         = websocket.Upgrader{CheckOrigin: func(r *http.Request) bool { return true }}
 )
 
 // Payload defines the message structure
@@ -43,9 +45,13 @@ func determineRabbitMQURL() {
 	var url string
 	switch *stage {
 	case "local":
-		url = config.ApplicationConfig.RabbitMQ.Local
+		url = config.ApplicationConfig.Local.RabbitMQLink
+		rabbitExchange = config.ApplicationConfig.Local.Exchange
+		rabbitRoutingKey = config.ApplicationConfig.Local.RoutingKey
 	case "prod":
-		url = config.ApplicationConfig.RabbitMQ.Prod
+		url = config.ApplicationConfig.Prod.RabbitMQLink
+		rabbitExchange = config.ApplicationConfig.Local.Exchange
+		rabbitRoutingKey = config.ApplicationConfig.Local.RoutingKey
 	default:
 		log.Fatalf("RabbitMQ URL for stage '%s' not found in config", *stage)
 	}
@@ -70,13 +76,13 @@ func publishToExchange(url string, payload Payload) error {
 
 	// Declare an exchange
 	err = ch.ExchangeDeclare(
-		config.ApplicationConfig.RabbitMQ.Exchange, // name
-		"direct", // type
-		true,     // durable
-		false,    // auto-deleted
-		false,    // internal
-		false,    // no-wait
-		nil,      // arguments
+		rabbitExchange, // name
+		"direct",       // type
+		true,           // durable
+		false,          // auto-deleted
+		false,          // internal
+		false,          // no-wait
+		nil,            // arguments
 	)
 	if err != nil {
 		return fmt.Errorf("failed to declare an exchange: %v", err)
@@ -90,10 +96,10 @@ func publishToExchange(url string, payload Payload) error {
 
 	// Publish the message to the exchange
 	err = ch.Publish(
-		config.ApplicationConfig.RabbitMQ.Exchange,   // exchange
-		config.ApplicationConfig.RabbitMQ.RoutingKey, // routing key
-		false, // mandatory
-		false, // immediate
+		rabbitExchange,   // exchange
+		rabbitRoutingKey, // routing key
+		false,            // mandatory
+		false,            // immediate
 		amqp.Publishing{
 			ContentType: "application/json",
 			Body:        body,

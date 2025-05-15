@@ -45,10 +45,10 @@ func loadConfig() {
 func determineRabbitMQURL() {
 	switch *stage {
 	case "local":
-		rabbitURL = config.ApplicationConfig.RabbitMQ.Local
+		rabbitURL = config.ApplicationConfig.Local.RabbitMQLink
 		log.Println("Using local RabbitMQ URL")
 	case "prod":
-		rabbitURL = config.ApplicationConfig.RabbitMQ.Prod
+		rabbitURL = config.ApplicationConfig.Prod.RabbitMQLink
 		log.Println("Using cluster RabbitMQ URL")
 	default:
 		log.Fatalf("RabbitMQ URL for stage '%s' not found in config", *stage)

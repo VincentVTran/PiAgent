@@ -41,7 +41,10 @@ type server struct {
 	version string
 }
 
-// Version implements apiHome
+// Implemented functions
+/*
+   Reconfigures the stream setting on the raspberry pi
+*/
 func (s *server) ConfigureStream(ctx context.Context, in *pb.StreamRequest) (*pb.OperationResponse, error) {
 	log.Println("Received connection from client")
 	log.Println("Client request: ", in)
@@ -58,7 +61,7 @@ func main() {
 		log.Println("Using prod configurations")
 	default:
 		// You can add more stages or default to cluster
-		log.Printf("Using RabbitMQ URL for stage '%s'", *stage)
+		log.Printf("Can't find stage '%s'", *stage)
 	}
 
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", *port))
