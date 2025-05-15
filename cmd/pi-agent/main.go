@@ -25,6 +25,7 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"os/exec"
 
 	pb "github.com/vincentvtran/pi-agent/api/types"
 	"google.golang.org/grpc"
@@ -41,11 +42,24 @@ type server struct {
 	version string
 }
 
-// Version implements apiHome
+// gRPC implemented endpoints
 func (s *server) ConfigureStream(ctx context.Context, in *pb.StreamRequest) (*pb.OperationResponse, error) {
 	log.Println("Received connection from client")
 	log.Println("Client request: ", in)
+	if in.Parameters.Enable {
+		StartStream()
+	} else {
+		StopStream()
+	}
 	return &pb.OperationResponse{ApiVersion: s.version, StatusCode: 400, Output: "Successfully configured streamed"}, nil
+}
+
+// Local Function
+func StartStream() error {
+	return exec.Command("systemctl", "start", "raspivid-stream").Run()
+}
+func StopStream() error {
+	return exec.Command("systemctl", "stop", "raspivid-stream").Run()
 }
 
 func main() {

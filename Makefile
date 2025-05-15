@@ -2,17 +2,18 @@
 SERVER_ADDRESS ?= 0.0.0.0
 PORT_NUMBER ?= 50051
 
-# Local testing
+# [Dev] Work environment setup
 build-local:
 	go mod download
 
 build-proto:
 	protoc --go-grpc_out=. --go-grpc_opt=paths=source_relative --go_out=. --go_opt=paths=source_relative api/types/api.proto
 
+# [Local w/o containers] Local testing commands
 test-local:
 	./script/start-server-local.sh
 
-# Build Docker images for all servers
+# [Local w/ containers] Local image building commands
 build-pi-agent-controller:
 	docker build -t pi-agent-controller:latest -f cmd/pi-agent-controller/Dockerfile .
 
@@ -24,7 +25,7 @@ build-pi-agent-controller-processor:
 
 build-all: build-pi-agent-controller build-pi-server build-pi-agent-controller-processor
 
-# Run Docker containers for testing
+# [Local w/ containers] Local testing with containers
 run-pi-agent-controller:
 	docker run --rm -p 5005:5005 pi-agent-controller:latest
 
@@ -36,6 +37,10 @@ run-pi-agent-controller-processor:
 
 run-all:
 	docker container prune -f; docker-compose up --build --remove-orphans
+
+# [Prod] Installation commands
+deploy-agent: 
+	./script/install-pi-agent.sh
 
 # Stop all services
 stop-all:
