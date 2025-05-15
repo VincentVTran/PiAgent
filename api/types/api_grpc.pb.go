@@ -33,107 +33,107 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	HomeService_Invoke_FullMethodName = "/homeserver.proto.HomeService/invoke"
+	PiAgentController_ConfigureStream_FullMethodName = "/homeserver.proto.PiAgentController/configureStream"
 )
 
-// HomeServiceClient is the client API for HomeService service.
+// PiAgentControllerClient is the client API for PiAgentController service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 //
-// The greeting service definition.
-type HomeServiceClient interface {
-	// Sends a greeting
-	Invoke(ctx context.Context, in *OperationRequest, opts ...grpc.CallOption) (*OperationResponse, error)
+// *
+// Service API definition
+type PiAgentControllerClient interface {
+	ConfigureStream(ctx context.Context, in *StreamRequest, opts ...grpc.CallOption) (*OperationResponse, error)
 }
 
-type homeServiceClient struct {
+type piAgentControllerClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewHomeServiceClient(cc grpc.ClientConnInterface) HomeServiceClient {
-	return &homeServiceClient{cc}
+func NewPiAgentControllerClient(cc grpc.ClientConnInterface) PiAgentControllerClient {
+	return &piAgentControllerClient{cc}
 }
 
-func (c *homeServiceClient) Invoke(ctx context.Context, in *OperationRequest, opts ...grpc.CallOption) (*OperationResponse, error) {
+func (c *piAgentControllerClient) ConfigureStream(ctx context.Context, in *StreamRequest, opts ...grpc.CallOption) (*OperationResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(OperationResponse)
-	err := c.cc.Invoke(ctx, HomeService_Invoke_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, PiAgentController_ConfigureStream_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// HomeServiceServer is the server API for HomeService service.
-// All implementations must embed UnimplementedHomeServiceServer
+// PiAgentControllerServer is the server API for PiAgentController service.
+// All implementations must embed UnimplementedPiAgentControllerServer
 // for forward compatibility.
 //
-// The greeting service definition.
-type HomeServiceServer interface {
-	// Sends a greeting
-	Invoke(context.Context, *OperationRequest) (*OperationResponse, error)
-	mustEmbedUnimplementedHomeServiceServer()
+// *
+// Service API definition
+type PiAgentControllerServer interface {
+	ConfigureStream(context.Context, *StreamRequest) (*OperationResponse, error)
+	mustEmbedUnimplementedPiAgentControllerServer()
 }
 
-// UnimplementedHomeServiceServer must be embedded to have
+// UnimplementedPiAgentControllerServer must be embedded to have
 // forward compatible implementations.
 //
 // NOTE: this should be embedded by value instead of pointer to avoid a nil
 // pointer dereference when methods are called.
-type UnimplementedHomeServiceServer struct{}
+type UnimplementedPiAgentControllerServer struct{}
 
-func (UnimplementedHomeServiceServer) Invoke(context.Context, *OperationRequest) (*OperationResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Invoke not implemented")
+func (UnimplementedPiAgentControllerServer) ConfigureStream(context.Context, *StreamRequest) (*OperationResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ConfigureStream not implemented")
 }
-func (UnimplementedHomeServiceServer) mustEmbedUnimplementedHomeServiceServer() {}
-func (UnimplementedHomeServiceServer) testEmbeddedByValue()                     {}
+func (UnimplementedPiAgentControllerServer) mustEmbedUnimplementedPiAgentControllerServer() {}
+func (UnimplementedPiAgentControllerServer) testEmbeddedByValue()                           {}
 
-// UnsafeHomeServiceServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to HomeServiceServer will
+// UnsafePiAgentControllerServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to PiAgentControllerServer will
 // result in compilation errors.
-type UnsafeHomeServiceServer interface {
-	mustEmbedUnimplementedHomeServiceServer()
+type UnsafePiAgentControllerServer interface {
+	mustEmbedUnimplementedPiAgentControllerServer()
 }
 
-func RegisterHomeServiceServer(s grpc.ServiceRegistrar, srv HomeServiceServer) {
-	// If the following call pancis, it indicates UnimplementedHomeServiceServer was
+func RegisterPiAgentControllerServer(s grpc.ServiceRegistrar, srv PiAgentControllerServer) {
+	// If the following call pancis, it indicates UnimplementedPiAgentControllerServer was
 	// embedded by pointer and is nil.  This will cause panics if an
 	// unimplemented method is ever invoked, so we test this at initialization
 	// time to prevent it from happening at runtime later due to I/O.
 	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
 		t.testEmbeddedByValue()
 	}
-	s.RegisterService(&HomeService_ServiceDesc, srv)
+	s.RegisterService(&PiAgentController_ServiceDesc, srv)
 }
 
-func _HomeService_Invoke_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(OperationRequest)
+func _PiAgentController_ConfigureStream_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StreamRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(HomeServiceServer).Invoke(ctx, in)
+		return srv.(PiAgentControllerServer).ConfigureStream(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: HomeService_Invoke_FullMethodName,
+		FullMethod: PiAgentController_ConfigureStream_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(HomeServiceServer).Invoke(ctx, req.(*OperationRequest))
+		return srv.(PiAgentControllerServer).ConfigureStream(ctx, req.(*StreamRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// HomeService_ServiceDesc is the grpc.ServiceDesc for HomeService service.
+// PiAgentController_ServiceDesc is the grpc.ServiceDesc for PiAgentController service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var HomeService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "homeserver.proto.HomeService",
-	HandlerType: (*HomeServiceServer)(nil),
+var PiAgentController_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "homeserver.proto.PiAgentController",
+	HandlerType: (*PiAgentControllerServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "invoke",
-			Handler:    _HomeService_Invoke_Handler,
+			MethodName: "configureStream",
+			Handler:    _PiAgentController_ConfigureStream_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

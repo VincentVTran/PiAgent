@@ -26,7 +26,7 @@ import (
 	"log"
 	"net"
 
-	pb "github.com/vincentvtran/homeserver/api/types"
+	pb "github.com/vincentvtran/pi-agent/api/types"
 	"google.golang.org/grpc"
 )
 
@@ -37,15 +37,15 @@ var (
 
 // server is used to implement helloworld.GreeterServer.
 type server struct {
-	pb.UnimplementedHomeServiceServer
+	pb.UnimplementedPiAgentControllerServer
 	version string
 }
 
 // Version implements apiHome
-func (s *server) Invoke(ctx context.Context, in *pb.OperationRequest) (*pb.OperationResponse, error) {
+func (s *server) ConfigureStream(ctx context.Context, in *pb.StreamRequest) (*pb.OperationResponse, error) {
 	log.Println("Received connection from client")
 	log.Println("Client request: ", in)
-	return &pb.OperationResponse{ApiVersion: s.version}, nil
+	return &pb.OperationResponse{ApiVersion: s.version, StatusCode: 400, Output: "Successfully configured streamed"}, nil
 }
 
 func main() {
@@ -66,7 +66,7 @@ func main() {
 		log.Fatalf("failed to listen: %v", err)
 	}
 	s := grpc.NewServer()
-	pb.RegisterHomeServiceServer(s, &server{version: "1.0.0"})
+	pb.RegisterPiAgentControllerServer(s, &server{version: "1.0.0"})
 	log.Printf("server listening at %v", lis.Addr())
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)

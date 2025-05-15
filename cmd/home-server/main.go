@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -11,8 +10,7 @@ import (
 
 	"github.com/gorilla/websocket"
 	amqp "github.com/rabbitmq/amqp091-go"
-	pb "github.com/vincentvtran/homeserver/api/types"
-	config "github.com/vincentvtran/homeserver/pkg/model"
+	config "github.com/vincentvtran/pi-agent/pkg/model"
 )
 
 var (
@@ -134,30 +132,6 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 	}
-}
-
-// gRPC server implementation
-type server struct {
-	pb.UnimplementedHomeServiceServer
-	version string
-}
-
-func (s *server) Invoke(ctx context.Context, in *pb.OperationRequest) (*pb.OperationResponse, error) {
-	log.Println("Received gRPC connection from client")
-	log.Println("Client request: ", in)
-
-	// Create a payload and publish it to the exchange
-	payload := Payload{
-		ID:      "12345",
-		Message: "Hello from home-server",
-	}
-	err := publishToExchange(rabbitURL, payload)
-	if err != nil {
-		log.Printf("Error publishing to RabbitMQ exchange: %v", err)
-		return nil, err
-	}
-
-	return &pb.OperationResponse{ApiVersion: s.version}, nil
 }
 
 func startWebSocketServer() {

@@ -10,8 +10,8 @@ import (
 	"time"
 
 	amqp "github.com/rabbitmq/amqp091-go"
-	pb "github.com/vincentvtran/homeserver/api/types"
-	config "github.com/vincentvtran/homeserver/pkg/model"
+	pb "github.com/vincentvtran/pi-agent/api/types"
+	config "github.com/vincentvtran/pi-agent/pkg/model"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
@@ -115,15 +115,17 @@ func main() {
 		log.Fatalf("did not connect: %v", err)
 	}
 	defer conn.Close()
-	c := pb.NewHomeServiceClient(conn)
+	c := pb.NewPiAgentControllerClient(conn)
 
 	// Contact the server and print out its response.
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
-	request := &pb.OperationRequest{
-		Param: &pb.OperationParameter{},
+	request := &pb.StreamRequest{
+		Parameter: &pb.StreamParameter{
+			Enable: true,
+		},
 	}
-	r, err := c.Invoke(ctx, request)
+	r, err := c.ConfigureStream(ctx, request)
 	if err != nil {
 		log.Fatalf("Could not reach server: %v", err)
 	}

@@ -37,28 +37,28 @@ const (
 
 // *
 // Operation request and response objects
-type OperationRequest struct {
+type StreamRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	UserId        string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
-	Param         *OperationParameter    `protobuf:"bytes,2,opt,name=param,proto3" json:"param,omitempty"`
+	ClientId      string                 `protobuf:"bytes,1,opt,name=client_id,json=clientId,proto3" json:"client_id,omitempty"`
+	Parameter     *StreamParameter       `protobuf:"bytes,2,opt,name=parameter,proto3" json:"parameter,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *OperationRequest) Reset() {
-	*x = OperationRequest{}
+func (x *StreamRequest) Reset() {
+	*x = StreamRequest{}
 	mi := &file_api_types_api_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *OperationRequest) String() string {
+func (x *StreamRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*OperationRequest) ProtoMessage() {}
+func (*StreamRequest) ProtoMessage() {}
 
-func (x *OperationRequest) ProtoReflect() protoreflect.Message {
+func (x *StreamRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_api_types_api_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -70,36 +70,81 @@ func (x *OperationRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use OperationRequest.ProtoReflect.Descriptor instead.
-func (*OperationRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use StreamRequest.ProtoReflect.Descriptor instead.
+func (*StreamRequest) Descriptor() ([]byte, []int) {
 	return file_api_types_api_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *OperationRequest) GetUserId() string {
+func (x *StreamRequest) GetClientId() string {
 	if x != nil {
-		return x.UserId
+		return x.ClientId
 	}
 	return ""
 }
 
-func (x *OperationRequest) GetParam() *OperationParameter {
+func (x *StreamRequest) GetParameter() *StreamParameter {
 	if x != nil {
-		return x.Param
+		return x.Parameter
 	}
 	return nil
+}
+
+type StreamParameter struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Enable        bool                   `protobuf:"varint,1,opt,name=enable,proto3" json:"enable,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *StreamParameter) Reset() {
+	*x = StreamParameter{}
+	mi := &file_api_types_api_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *StreamParameter) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StreamParameter) ProtoMessage() {}
+
+func (x *StreamParameter) ProtoReflect() protoreflect.Message {
+	mi := &file_api_types_api_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use StreamParameter.ProtoReflect.Descriptor instead.
+func (*StreamParameter) Descriptor() ([]byte, []int) {
+	return file_api_types_api_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *StreamParameter) GetEnable() bool {
+	if x != nil {
+		return x.Enable
+	}
+	return false
 }
 
 type OperationResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	ApiVersion    string                 `protobuf:"bytes,1,opt,name=api_version,json=apiVersion,proto3" json:"api_version,omitempty"`
-	Output        string                 `protobuf:"bytes,2,opt,name=output,proto3" json:"output,omitempty"`
+	StatusCode    int32                  `protobuf:"varint,2,opt,name=status_code,json=statusCode,proto3" json:"status_code,omitempty"`
+	Output        string                 `protobuf:"bytes,3,opt,name=output,proto3" json:"output,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *OperationResponse) Reset() {
 	*x = OperationResponse{}
-	mi := &file_api_types_api_proto_msgTypes[1]
+	mi := &file_api_types_api_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -111,7 +156,7 @@ func (x *OperationResponse) String() string {
 func (*OperationResponse) ProtoMessage() {}
 
 func (x *OperationResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_types_api_proto_msgTypes[1]
+	mi := &file_api_types_api_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -124,7 +169,7 @@ func (x *OperationResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OperationResponse.ProtoReflect.Descriptor instead.
 func (*OperationResponse) Descriptor() ([]byte, []int) {
-	return file_api_types_api_proto_rawDescGZIP(), []int{1}
+	return file_api_types_api_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *OperationResponse) GetApiVersion() string {
@@ -134,55 +179,16 @@ func (x *OperationResponse) GetApiVersion() string {
 	return ""
 }
 
+func (x *OperationResponse) GetStatusCode() int32 {
+	if x != nil {
+		return x.StatusCode
+	}
+	return 0
+}
+
 func (x *OperationResponse) GetOutput() string {
 	if x != nil {
 		return x.Output
-	}
-	return ""
-}
-
-// *
-// Operation input parameter object
-type OperationParameter struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Payload       string                 `protobuf:"bytes,1,opt,name=payload,proto3" json:"payload,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *OperationParameter) Reset() {
-	*x = OperationParameter{}
-	mi := &file_api_types_api_proto_msgTypes[2]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *OperationParameter) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*OperationParameter) ProtoMessage() {}
-
-func (x *OperationParameter) ProtoReflect() protoreflect.Message {
-	mi := &file_api_types_api_proto_msgTypes[2]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use OperationParameter.ProtoReflect.Descriptor instead.
-func (*OperationParameter) Descriptor() ([]byte, []int) {
-	return file_api_types_api_proto_rawDescGZIP(), []int{2}
-}
-
-func (x *OperationParameter) GetPayload() string {
-	if x != nil {
-		return x.Payload
 	}
 	return ""
 }
@@ -191,18 +197,20 @@ var File_api_types_api_proto protoreflect.FileDescriptor
 
 const file_api_types_api_proto_rawDesc = "" +
 	"\n" +
-	"\x13api/types/api.proto\x12\x10homeserver.proto\"g\n" +
-	"\x10OperationRequest\x12\x17\n" +
-	"\auser_id\x18\x01 \x01(\tR\x06userId\x12:\n" +
-	"\x05param\x18\x02 \x01(\v2$.homeserver.proto.OperationParameterR\x05param\"L\n" +
+	"\x13api/types/api.proto\x12\x10homeserver.proto\"m\n" +
+	"\rStreamRequest\x12\x1b\n" +
+	"\tclient_id\x18\x01 \x01(\tR\bclientId\x12?\n" +
+	"\tparameter\x18\x02 \x01(\v2!.homeserver.proto.StreamParameterR\tparameter\")\n" +
+	"\x0fStreamParameter\x12\x16\n" +
+	"\x06enable\x18\x01 \x01(\bR\x06enable\"m\n" +
 	"\x11OperationResponse\x12\x1f\n" +
 	"\vapi_version\x18\x01 \x01(\tR\n" +
-	"apiVersion\x12\x16\n" +
-	"\x06output\x18\x02 \x01(\tR\x06output\".\n" +
-	"\x12OperationParameter\x12\x18\n" +
-	"\apayload\x18\x01 \x01(\tR\apayload2b\n" +
-	"\vHomeService\x12S\n" +
-	"\x06invoke\x12\".homeserver.proto.OperationRequest\x1a#.homeserver.proto.OperationResponse\"\x00B*Z(github.com/vincentvtran/homeserver/protob\x06proto3"
+	"apiVersion\x12\x1f\n" +
+	"\vstatus_code\x18\x02 \x01(\x05R\n" +
+	"statusCode\x12\x16\n" +
+	"\x06output\x18\x03 \x01(\tR\x06output2n\n" +
+	"\x11PiAgentController\x12Y\n" +
+	"\x0fconfigureStream\x12\x1f.homeserver.proto.StreamRequest\x1a#.homeserver.proto.OperationResponse\"\x00B(Z&github.com/vincentvtran/pi-agent/protob\x06proto3"
 
 var (
 	file_api_types_api_proto_rawDescOnce sync.Once
@@ -218,14 +226,14 @@ func file_api_types_api_proto_rawDescGZIP() []byte {
 
 var file_api_types_api_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
 var file_api_types_api_proto_goTypes = []any{
-	(*OperationRequest)(nil),   // 0: homeserver.proto.OperationRequest
-	(*OperationResponse)(nil),  // 1: homeserver.proto.OperationResponse
-	(*OperationParameter)(nil), // 2: homeserver.proto.OperationParameter
+	(*StreamRequest)(nil),     // 0: homeserver.proto.StreamRequest
+	(*StreamParameter)(nil),   // 1: homeserver.proto.StreamParameter
+	(*OperationResponse)(nil), // 2: homeserver.proto.OperationResponse
 }
 var file_api_types_api_proto_depIdxs = []int32{
-	2, // 0: homeserver.proto.OperationRequest.param:type_name -> homeserver.proto.OperationParameter
-	0, // 1: homeserver.proto.HomeService.invoke:input_type -> homeserver.proto.OperationRequest
-	1, // 2: homeserver.proto.HomeService.invoke:output_type -> homeserver.proto.OperationResponse
+	1, // 0: homeserver.proto.StreamRequest.parameter:type_name -> homeserver.proto.StreamParameter
+	0, // 1: homeserver.proto.PiAgentController.configureStream:input_type -> homeserver.proto.StreamRequest
+	2, // 2: homeserver.proto.PiAgentController.configureStream:output_type -> homeserver.proto.OperationResponse
 	2, // [2:3] is the sub-list for method output_type
 	1, // [1:2] is the sub-list for method input_type
 	1, // [1:1] is the sub-list for extension type_name

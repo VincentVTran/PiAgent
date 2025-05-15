@@ -14,33 +14,36 @@
 
 syntax = "proto3";
 
-option go_package = "github.com/vincentvtran/homeserver/proto";
+option go_package = "github.com/vincentvtran/pi-agent/proto";
 
 package homeserver.proto;
 
 /**
  * Service API definition
  */
-service HomeService {
-  rpc invoke(OperationRequest) returns (OperationResponse) {}
+service PiAgentController {
+  rpc configureStream(StreamRequest) returns (OperationResponse) {}
 }
 
 /**
  * Operation request and response objects
  */
-message OperationRequest {
-  string user_id = 1;
-  OperationParameter param = 2;
+message StreamRequest {
+  string client_id = 1;
+  StreamParameter parameter = 2;
+}
+
+message StreamParameter {
+  bool enable = 1;
 }
 
 message OperationResponse {
   string api_version = 1;
-  string output = 2;
+  int32 status_code = 2;
+  string output = 3;
 }
 
 /**
  * Operation input parameter object
  */
- message OperationParameter {
-  string payload = 1;
-}
+
