@@ -7,19 +7,19 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/gorilla/websocket"
 	amqp "github.com/rabbitmq/amqp091-go"
 	pb "github.com/vincentvtran/homeserver/api/types"
+	config "github.com/vincentvtran/homeserver/pkg/model"
 )
 
 var (
-	port       = flag.Int("port", 5005, "The gRPC server port")
-	stage      = flag.String("stage", "local", "Stage for RabbitMQ URL (e.g., local or production)")
-	rabbitURL  string
-	exchange   = "amq.direct"
-	routingKey = "pi-queue-key"
-	upgrader   = websocket.Upgrader{CheckOrigin: func(r *http.Request) bool { return true }}
+	port      = flag.Int("port", 5005, "The gRPC server port")
+	stage     = flag.String("stage", "local", "Stage for RabbitMQ URL (e.g., local or production)")
+	rabbitURL string
+	upgrader  = websocket.Upgrader{CheckOrigin: func(r *http.Request) bool { return true }}
 )
 
 // Payload defines the message structure
@@ -28,21 +28,34 @@ type Payload struct {
 	Message string `json:"message"`
 }
 
-func determineRabbitMQURL() {
-	switch *stage {
-	case "local":
-		rabbitURL = "amqp://admin:admin-ui-password@192.168.2.4:5672/"
-		log.Println("Using local RabbitMQ URL")
-	case "prod":
-		rabbitURL = "amqp://admin:admin-ui-password@rabbitmq.rabbitmq.service.cluster.local:5672/"
-		log.Println("Using cluster RabbitMQ URL")
-	default:
-		rabbitURL = "amqp://admin:admin-ui-password@rabbitmq.rabbitmq.service.cluster.local:5672/"
-		log.Printf("Using RabbitMQ URL for stage '%s'", *stage)
+func loadConfig() {
+	file, err := os.Open("config/application-config.json")
+	if err != nil {
+		log.Fatalf("Failed to open config file: %v", err)
+	}
+	defer file.Close()
+
+	decoder := json.NewDecoder(file)
+	if err := decoder.Decode(&config.ApplicationConfig); err != nil {
+		log.Fatalf("Failed to decode config file: %v", err)
 	}
 }
 
-func publishToExchange(url, exchange, routingKey string, payload Payload) error {
+func determineRabbitMQURL() {
+	var url string
+	switch *stage {
+	case "local":
+		url = config.ApplicationConfig.RabbitMQ.Local
+	case "prod":
+		url = config.ApplicationConfig.RabbitMQ.Prod
+	default:
+		log.Fatalf("RabbitMQ URL for stage '%s' not found in config", *stage)
+	}
+	rabbitURL = url
+	log.Printf("Using RabbitMQ URL for stage '%s': %s", *stage, rabbitURL)
+}
+
+func publishToExchange(url string, payload Payload) error {
 	// Connect to RabbitMQ
 	conn, err := amqp.Dial(url)
 	if err != nil {
@@ -59,7 +72,7 @@ func publishToExchange(url, exchange, routingKey string, payload Payload) error 
 
 	// Declare an exchange
 	err = ch.ExchangeDeclare(
-		exchange, // name
+		config.ApplicationConfig.RabbitMQ.Exchange, // name
 		"direct", // type
 		true,     // durable
 		false,    // auto-deleted
@@ -79,10 +92,10 @@ func publishToExchange(url, exchange, routingKey string, payload Payload) error 
 
 	// Publish the message to the exchange
 	err = ch.Publish(
-		exchange,   // exchange
-		routingKey, // routing key
-		false,      // mandatory
-		false,      // immediate
+		config.ApplicationConfig.RabbitMQ.Exchange,   // exchange
+		config.ApplicationConfig.RabbitMQ.RoutingKey, // routing key
+		false, // mandatory
+		false, // immediate
 		amqp.Publishing{
 			ContentType: "application/json",
 			Body:        body,
@@ -92,7 +105,7 @@ func publishToExchange(url, exchange, routingKey string, payload Payload) error 
 		return fmt.Errorf("failed to publish a message: %v", err)
 	}
 
-	log.Printf("Message published to exchange %s with routing key %s: %v", exchange, routingKey, payload)
+	log.Printf("Message published to exchange %s with routing key %s: %v", config.ApplicationConfig.RabbitMQ.Exchange, config.ApplicationConfig.RabbitMQ.RoutingKey, payload)
 	return nil
 }
 
@@ -115,7 +128,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 		log.Printf("WebSocket received message: %s", message)
-		publishToExchange(rabbitURL, exchange, routingKey, Payload{Message: string(message)})
+		publishToExchange(rabbitURL, Payload{Message: string(message)})
 		// Echo the message back to the client
 		err = conn.WriteMessage(websocket.TextMessage, message)
 		if err != nil {
@@ -140,7 +153,7 @@ func (s *server) Invoke(ctx context.Context, in *pb.OperationRequest) (*pb.Opera
 		ID:      "12345",
 		Message: "Hello from home-server",
 	}
-	err := publishToExchange(rabbitURL, exchange, routingKey, payload)
+	err := publishToExchange(rabbitURL, payload)
 	if err != nil {
 		log.Printf("Error publishing to RabbitMQ exchange: %v", err)
 		return nil, err
@@ -160,6 +173,9 @@ func startWebSocketServer() {
 
 func main() {
 	flag.Parse()
+
+	// Load configuration
+	loadConfig()
 
 	// Determine RabbitMQ URL based on stage
 	determineRabbitMQURL()

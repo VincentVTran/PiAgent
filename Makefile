@@ -8,16 +8,34 @@ rebuild-proto:
 test-local:
 	./script/start-server-local.sh
 
-start-client:
-	go run example/test/client_main.go --server-address $(SERVER_ADDRESS):$(PORT_NUMBER)
+# Build Docker images for all servers
+build-home-server:
+	docker build -t home-server:latest -f cmd/home-server/Dockerfile .
 
-# Build the Docker image
-build:
-	docker build -t homeserver:latest .
+build-pi-server:
+	docker build -t pi-agent:latest -f cmd/pi-agent/Dockerfile .
 
-# Run the Docker container for testing
-run:
-	docker run --rm -p 50051:50051 homeserver:latest
+build-queue-ingestor-server:
+	docker build -t queue-ingestor-server:latest -f cmd/queue-ingestor-server/Dockerfile .
+
+build-all: build-home-server build-pi-server build-queue-ingestor-server
+
+# Run Docker containers for testing
+run-home-server:
+	docker run --rm -p 5005:5005 home-server:latest
+
+run-pi-server:
+	docker run --rm -p 50051:50051 pi-agent:latest
+
+run-queue-ingestor-server:
+	docker run --rm -p 50052:50052 queue-ingestor-server:latest
+
+run-all:
+	docker-compose up --build
+
+# Stop all services
+stop-all:
+	docker compose down
 
 # Clean up dangling Docker images
 clean:

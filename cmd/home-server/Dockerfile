@@ -5,17 +5,17 @@ FROM golang:1.22
 WORKDIR /app
 
 # Copy the Go modules manifests and download dependencies
-COPY go.mod go.sum ./
+COPY ../../../go.mod ../../../go.sum ./
 RUN go mod download
 
 # Copy the rest of the application code
-COPY . .
+COPY ../../../ ./
 
 # Build the gRPC server
-RUN go build -o server ./cmd/home-server/main.go
+RUN go build -o home-server ./cmd/home-server/main.go
 
 # Expose the gRPC server port
-EXPOSE 50051
+EXPOSE 5005
 
 # Command to run the gRPC server
-CMD ["./server"]
+CMD ["./home-server"]

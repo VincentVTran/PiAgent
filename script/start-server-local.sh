@@ -28,7 +28,7 @@ HOME_PID=$!
 echo "Home server started with PID $HOME_PID on port $HOME_PORT"
 
 # Start pi-server in the background
-go run cmd/pi-server/main.go --stage="local" --port=$PI_PORT &
+go run cmd/pi-agent/main.go --stage="local" --port=$PI_PORT &
 PI_PID=$!
 echo "Pi server started with PID $PI_PID on port $PI_PORT"
 

@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  home-server:
+    build:
+      context: .
+      dockerfile: cmd/home-server/Dockerfile
+    ports:
+      - "5005:5005"
+    container_name: home-server
+    environment:
+      - STAGE=local
+
+  pi-server:
+    build:
+      context: .
+      dockerfile: cmd/pi-agent/Dockerfile
+    ports:
+      - "50051:50051"
+    container_name: pi-server
+    environment:
+      - STAGE=local
+
+  queue-ingestor-server:
+    build:
+      context: .
+      dockerfile: cmd/queue-ingestor-server/Dockerfile
+    ports:
+      - "50052:50052"
+    container_name: queue-ingestor-server
+    depends_on:
+      - pi-server
+    environment:
+      - STAGE=local

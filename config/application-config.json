@@ -1,0 +1,8 @@
+{
+  "rabbitmq": {
+    "local": "amqp://admin:admin-ui-password@192.168.2.4:5672/",
+    "prod": "amqp://admin:admin-ui-password@rabbitmq.rabbitmq.service.cluster.local:5672/",
+    "exchange": "amq.direct",
+    "routingKey": "pi"
+  }
+}
