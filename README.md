@@ -1,6 +1,6 @@
 ## HomeServer
 #### Component Overview
-- pi-gateway = gRPC server hosted on a k8 cluster that interacts with pi-controller
+- pi-controller-processor = gRPC server hosted on a k8 cluster that interacts with pi-controller
 - pi-controller = gRPC client that is installed onto raspberry pi. Purpose is to listen to controller and handles on-system functionalities
 
 #### To init mod (Fresh build)

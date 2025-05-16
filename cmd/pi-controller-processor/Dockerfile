@@ -15,7 +15,7 @@ COPY ../../../ ./
 RUN go build -o pi-controller-processor ./cmd/pi-controller-processor/main.go
 
 # Expose the gRPC server port
-EXPOSE 5005
+EXPOSE 50052
 
 # Command to run the gRPC server
 CMD ["./pi-controller-processor"]

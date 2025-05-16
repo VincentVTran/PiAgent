@@ -1,26 +1,27 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"flag"
 	"fmt"
 	"log"
-	"net/http"
 	"os"
+	"time"
 
-	"github.com/gorilla/websocket"
 	amqp "github.com/rabbitmq/amqp091-go"
+	pb "github.com/vincentvtran/pi-controller/api/types"
 	model "github.com/vincentvtran/pi-controller/pkg/model"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 var (
-	port             = flag.Int("port", 5005, "The gRPC server port")
-	stage            = flag.String("stage", "local", "Stage for RabbitMQ URL (e.g., local or production)")
-	rabbitURL        string
-	rabbitExchange   string
-	rabbitRoutingKey string
-	upgrader         = websocket.Upgrader{CheckOrigin: func(r *http.Request) bool { return true }}
-	config           model.ApplicationConfig
+	addr      = flag.String("server-address", "dev-desktop.vt:50051", "the address to connect to")
+	stage     = flag.String("stage", "local", "Stage for RabbitMQ URL (e.g., local or production)")
+	queueName = flag.String("queue", "pi-queue", "RabbitMQ queue name")
+	rabbitURL string
+	config    model.ApplicationConfig
 )
 
 func loadConfig() {
@@ -37,24 +38,19 @@ func loadConfig() {
 }
 
 func determineRabbitMQURL() {
-	var url string
 	switch *stage {
 	case "local":
-		url = config.Local.RabbitMQLink
-		rabbitExchange = config.Local.Exchange
-		rabbitRoutingKey = config.Local.RoutingKey
+		rabbitURL = config.Local.RabbitMQLink
+		log.Println("Using local RabbitMQ URL")
 	case "prod":
-		url = config.Prod.RabbitMQLink
-		rabbitExchange = config.Local.Exchange
-		rabbitRoutingKey = config.Local.RoutingKey
+		rabbitURL = config.Prod.RabbitMQLink
+		log.Println("Using cluster RabbitMQ URL")
 	default:
 		log.Fatalf("RabbitMQ URL for stage '%s' not found in config", *stage)
 	}
-	rabbitURL = url
-	log.Printf("Using RabbitMQ URL for stage '%s': %s", *stage, rabbitURL)
 }
 
-func publishToExchange(url string, payload []byte) error {
+func consumeFromRabbitMQ(url, queue string) error {
 	// Connect to RabbitMQ
 	conn, err := amqp.Dial(url)
 	if err != nil {
@@ -69,73 +65,37 @@ func publishToExchange(url string, payload []byte) error {
 	}
 	defer ch.Close()
 
-	// Declare an exchange
-	err = ch.ExchangeDeclare(
-		rabbitExchange, // name
-		"direct",       // type
-		true,           // durable
-		false,          // auto-deleted
-		false,          // internal
-		false,          // no-wait
-		nil,            // arguments
+	// Consume messages from the queue
+	msgs, err := ch.Consume(
+		queue,                     // queue
+		"pi-controller-processor", // consumer
+		true,                      // auto-ack
+		false,                     // exclusive
+		false,                     // no-local (deprecated in amqp091-go)
+		false,                     // no-wait
+		nil,                       // args
 	)
 	if err != nil {
-		return fmt.Errorf("failed to declare an exchange: %v", err)
+		return fmt.Errorf("failed to register a consumer: %v", err)
 	}
 
-	// Publish the message to the exchange
-	err = ch.Publish(
-		rabbitExchange,   // exchange
-		rabbitRoutingKey, // routing key
-		false,            // mandatory
-		false,            // immediate
-		amqp.Publishing{
-			ContentType: "application/json",
-			Body:        payload,
-		},
-	)
-	if err != nil {
-		return fmt.Errorf("failed to publish a message: %v", err)
-	}
+	// Process messages
+	forever := make(chan bool)
+	go func() {
+		for d := range msgs {
+			var p model.PiOperation
+			err := json.Unmarshal(d.Body, &p)
+			if err != nil {
+				log.Printf("Error unmarshalling message: %v", err)
+				continue
+			}
+			log.Printf("[Queue Ingestor] Received message: %v", p)
+		}
+	}()
+
+	log.Println("Waiting for messages. To exit press CTRL+C")
+	<-forever
 	return nil
-}
-
-// WebSocket handler
-func handleWebSocket(w http.ResponseWriter, r *http.Request) {
-	conn, err := upgrader.Upgrade(w, r, nil)
-	if err != nil {
-		log.Printf("Failed to upgrade connection: %v", err)
-		return
-	}
-	defer conn.Close()
-
-	log.Println("WebSocket connection established")
-
-	for {
-		// Read message from client
-		_, message, err := conn.ReadMessage()
-		if err != nil {
-			log.Printf("Error reading message: %v", err)
-			break
-		}
-		log.Printf("WebSocket received message: %s", message)
-		publishToExchange(rabbitURL, message)
-		// Echo the message back to the client
-		err = conn.WriteMessage(websocket.TextMessage, message)
-		if err != nil {
-			log.Printf("Error writing message: %v", err)
-			break
-		}
-	}
-}
-
-func startWebSocketServer() {
-	http.HandleFunc("/ws", handleWebSocket)
-	log.Printf("WebSocket server listening on port %d", *port)
-	err := http.ListenAndServe(fmt.Sprintf(":%d", *port), nil)
-	if err != nil {
-		log.Fatalf("Failed to start WebSocket server: %v", err)
-	}
 }
 
 func main() {
@@ -144,9 +104,34 @@ func main() {
 	// Load configuration
 	loadConfig()
 
+	// Set up a connection to the server.
+	conn, err := grpc.NewClient(*addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		log.Fatalf("did not connect: %v", err)
+	}
+	defer conn.Close()
+
+	// Contact the server and print out its response.
+	c := pb.NewPiAgentControllerClient(conn)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+	request := &pb.StreamRequest{
+		Parameters: &pb.StreamParameter{
+			Enable: true,
+		},
+	}
+	r, err := c.ConfigureStream(ctx, request)
+	if err != nil {
+		log.Fatalf("Could not reach server: %v", err)
+	}
+	log.Printf("Server is currently set to version: %s", r.ApiVersion)
+
 	// Determine RabbitMQ URL based on stage
 	determineRabbitMQURL()
 
-	// Start WebSocket server
-	startWebSocketServer()
+	log.Printf("Connecting to RabbitMQ at %s and consuming from queue %s", rabbitURL, *queueName)
+	err = consumeFromRabbitMQ(rabbitURL, *queueName)
+	if err != nil {
+		log.Fatalf("Error consuming from RabbitMQ: %v", err)
+	}
 }

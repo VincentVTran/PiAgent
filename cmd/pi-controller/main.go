@@ -24,35 +24,39 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"log/slog"
 	"net"
 	"os/exec"
 
 	pb "github.com/vincentvtran/pi-controller/api/types"
+	"github.com/vincentvtran/pi-controller/pkg/logging"
+	"go.opentelemetry.io/contrib/bridges/otelslog"
 	"google.golang.org/grpc"
 )
 
 var (
-	port  = flag.Int("port", 50051, "The server port")
-	stage = flag.String("stage", "local", "Stage for RabbitMQ URL (e.g., local or production)")
+	port   = flag.Int("port", 50051, "The server port")
+	stage  = flag.String("stage", "local", "Stage for RabbitMQ URL (e.g., local or production)")
+	logger *slog.Logger
 )
 
-// server is used to implement helloworld.GreeterServer.
 type server struct {
 	pb.UnimplementedPiAgentControllerServer
-	version string
+	version   string
+	client_id string
 }
 
 // gRPC implemented endpoints
 func (s *server) ConfigureStream(ctx context.Context, in *pb.StreamRequest) (*pb.OperationResponse, error) {
 	log.Println("Client request: ", in)
 	if in.Parameters.Enable {
-		log.Println("Starting stream")
+		logger.Info("Starting stream")
 		err := StartStream()
 		if err != nil {
 			log.Println("Error starting stream: ", err)
 		}
 	} else {
-		log.Println("Stopping stream")
+		logger.Info("Stopping stream")
 		err := StartStream()
 		if err != nil {
 			log.Println("Error starting stream: ", err)
@@ -72,24 +76,30 @@ func StopStream() error {
 func main() {
 	flag.Parse()
 
+	var shutdown, err = logging.InitTelemetry(context.Background())
+	if err != nil {
+		log.Fatalf("failed to init telemetry: %v", err)
+	}
+	client_id := "pi-controller"
+	logger = otelslog.NewLogger(client_id)
+	defer shutdown(context.Background())
 	switch *stage {
 	case "local":
-		log.Println("Using local configurations")
+		logger.Info("Using local configurations")
 	case "prod":
-		log.Println("Using prod configurations")
+		logger.Info("Using prod configurations")
 	default:
-		// You can add more stages or default to cluster
-		log.Printf("Using RabbitMQ URL for stage '%s'", *stage)
+		logger.Warn("Using prod configurations")
 	}
 
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", *port))
 	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
+		logger.Error(fmt.Sprintf("failed to listen: %v", err))
 	}
 	s := grpc.NewServer()
-	pb.RegisterPiAgentControllerServer(s, &server{version: "1.0.0"})
-	log.Printf("server listening at %v", lis.Addr())
+	pb.RegisterPiAgentControllerServer(s, &server{version: "1.0.0", client_id: client_id})
+	logger.Info(fmt.Sprintf("server listening at %v", lis.Addr()))
 	if err := s.Serve(lis); err != nil {
-		log.Fatalf("failed to serve: %v", err)
+		logger.Error(fmt.Sprintf("failed to serve: %v", err))
 	}
 }

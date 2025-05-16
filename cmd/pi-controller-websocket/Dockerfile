@@ -12,10 +12,10 @@ RUN go mod download
 COPY ../../../ ./
 
 # Build the gRPC server
-RUN go build -o pi-gateway ./cmd/pi-gateway/main.go
+RUN go build -o pi-controller-websocket ./cmd/pi-controller-websocket/main.go
 
 # Expose the gRPC server port
-EXPOSE 50052
+EXPOSE 5005
 
 # Command to run the gRPC server
-CMD ["./pi-gateway"]
+CMD ["./pi-controller-websocket"]

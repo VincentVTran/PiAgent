@@ -14,26 +14,26 @@ test-local:
 	./script/start-server-local.sh
 
 # [Local w/ containers] Local image building commands
-build-pi-controller-processor:
-	docker build -t pi-controller-processor:latest -f cmd/pi-controller-processor/Dockerfile .
+build-pi-controller-websocket:
+	docker build -t pi-controller-websocket:latest -f cmd/pi-controller-websocket/Dockerfile .
 
 build-pi-controller:
 	docker build -t pi-controller:latest -f cmd/pi-controller/Dockerfile .
 
-build-pi-gateway:
-	docker build -t pi-gateway:latest -f cmd/pi-gateway/Dockerfile .
+build-pi-controller-processor:
+	docker build -t pi-controller-processor:latest -f cmd/pi-controller-processor/Dockerfile .
 
-build-all: build-pi-controller-processor build-pi-server build-pi-gateway
+build-all: build-pi-controller-websocket build-pi-server build-pi-controller-processor
 
 # [Local w/ containers] Local testing with containers
-run-pi-controller-processor:
-	docker run --rm -p 5005:5005 pi-controller-processor:latest
+run-pi-controller-websocket:
+	docker run --rm -p 5005:5005 pi-controller-websocket:latest
 
 run-pi-controller:
 	docker run --rm -p 50051:50051 pi-controller:latest
 
-run-pi-gateway:
-	docker run --rm -p 50052:50052 pi-gateway:latest
+run-pi-controller-processor:
+	docker run --rm -p 50052:50052 pi-controller-processor:latest
 
 run-all:
 	docker container prune -f; docker-compose up --build --remove-orphans

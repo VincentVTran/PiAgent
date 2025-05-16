@@ -1,23 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: pi-gateway
+  name: pi-controller-processor
   namespace: pi-controller
   labels:
-    app: pi-gateway
+    app: pi-controller-processor
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: pi-gateway
+      app: pi-controller-processor
   template:
     metadata:
       labels:
-        app: pi-gateway
+        app: pi-controller-processor
     spec:
       containers:
-      - name: pi-gateway
-        image: pi-gateway:latest
+      - name: pi-controller-processor
+        image: pi-controller-processor:latest
         ports:
         - containerPort: 50052
         resources:
@@ -34,12 +34,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: pi-gateway-service
+  name: pi-controller-processor-service
   namespace: pi-controller
 spec:
   type: LoadBalancer
   selector:
-    app: pi-gateway
+    app: pi-controller-processor
   ports:
   - protocol: TCP
     port: 50052
