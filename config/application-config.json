@@ -3,14 +3,14 @@
     "rabbitMQLink": "amqp://admin:admin-ui-password@192.168.2.4:5672/",
     "exchange": "amq.direct",
     "routingKey": "pi-queue-key",
-    "pi-agent-dns": "localhost",
-    "pi-agent-port": "50051"
+    "pi-controller-dns": "localhost",
+    "pi-controller-port": "50051"
   },
   "prod": {
     "rabbitMQLink": "amqp://admin:admin-ui-password@rabbitmq.rabbitmq.service.cluster.local:5672/",
     "exchange": "amq.direct",
     "routingKey": "pi-queue-key",
     "pi-dns": "pi-server.vt",
-    "pi-agent-port": "50051"
+    "pi-controller-port": "50051"
   }
 }

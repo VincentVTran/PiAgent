@@ -22,18 +22,18 @@ make_port_available() {
 HOME_PORT=$(make_port_available 5005)  # Capture the output of the function
 PI_PORT=$(make_port_available 50051)  # Capture the output of the function
 
-# Start pi-agent-controller in the background
-go run cmd/pi-agent-controller/main.go --stage="local" --port=$HOME_PORT &
+# Start pi-controller-processor in the background
+go run cmd/pi-controller-processor/main.go --stage="local" --port=$HOME_PORT &
 HOME_PID=$!
 echo "Home server started with PID $HOME_PID on port $HOME_PORT"
 
-# Start pi-agent in the background
-go run cmd/pi-agent/main.go --stage="local" --port=$PI_PORT &
+# Start pi-controller in the background
+go run cmd/pi-controller/main.go --stage="local" --port=$PI_PORT &
 PI_PID=$!
 echo "Pi server started with PID $PI_PID on port $PI_PORT"
 
 # Start the queue-ingestor-service in the foreground
-go run cmd/pi-agent-controller-processor/main.go --stage="local" --server-address dev-desktop.vt:$PI_PORT
+go run cmd/pi-gateway/main.go --stage="local" --server-address dev-desktop.vt:$PI_PORT
 echo "Queue ingestor service started on dev-desktop.vt:$PI_PORT"
 
 # Wait for the foreground process to complete

@@ -212,7 +212,7 @@ const file_api_types_api_proto_rawDesc = "" +
 	"statusCode\x12\x16\n" +
 	"\x06output\x18\x03 \x01(\tR\x06output2n\n" +
 	"\x11PiAgentController\x12Y\n" +
-	"\x0fconfigureStream\x12\x1f.homeserver.proto.StreamRequest\x1a#.homeserver.proto.OperationResponse\"\x00B(Z&github.com/vincentvtran/pi-agent/protob\x06proto3"
+	"\x0fconfigureStream\x12\x1f.homeserver.proto.StreamRequest\x1a#.homeserver.proto.OperationResponse\"\x00B-Z+github.com/vincentvtran/pi-controller/protob\x06proto3"
 
 var (
 	file_api_types_api_proto_rawDescOnce sync.Once

@@ -1,7 +1,7 @@
 ## HomeServer
 #### Component Overview
-- pi-agent-controller-processor = gRPC server hosted on a k8 cluster that interacts with pi-agent
-- pi-agent = gRPC client that is installed onto raspberry pi. Purpose is to listen to controller and handles on-system functionalities
+- pi-gateway = gRPC server hosted on a k8 cluster that interacts with pi-controller
+- pi-controller = gRPC client that is installed onto raspberry pi. Purpose is to listen to controller and handles on-system functionalities
 
 #### To init mod (Fresh build)
 ```go mod init github.com/vincentvtran/genagent```

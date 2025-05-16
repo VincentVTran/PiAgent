@@ -37,7 +37,7 @@ echo "${SERVICE_NAME} is now installed, enabled, and running."
 go mod download
 
 # Building executable
-go build -o pi-agent ./cmd/pi-agent/main.go
+go build -o pi-controller ./cmd/pi-controller/main.go
 
 # Execute executable
-./pi-agent
+./pi-controller

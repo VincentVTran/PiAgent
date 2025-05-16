@@ -14,33 +14,33 @@ test-local:
 	./script/start-server-local.sh
 
 # [Local w/ containers] Local image building commands
-build-pi-agent-controller:
-	docker build -t pi-agent-controller:latest -f cmd/pi-agent-controller/Dockerfile .
+build-pi-controller-processor:
+	docker build -t pi-controller-processor:latest -f cmd/pi-controller-processor/Dockerfile .
 
-build-pi-agent:
-	docker build -t pi-agent:latest -f cmd/pi-agent/Dockerfile .
+build-pi-controller:
+	docker build -t pi-controller:latest -f cmd/pi-controller/Dockerfile .
 
-build-pi-agent-controller-processor:
-	docker build -t pi-agent-controller-processor:latest -f cmd/pi-agent-controller-processor/Dockerfile .
+build-pi-gateway:
+	docker build -t pi-gateway:latest -f cmd/pi-gateway/Dockerfile .
 
-build-all: build-pi-agent-controller build-pi-server build-pi-agent-controller-processor
+build-all: build-pi-controller-processor build-pi-server build-pi-gateway
 
 # [Local w/ containers] Local testing with containers
-run-pi-agent-controller:
-	docker run --rm -p 5005:5005 pi-agent-controller:latest
+run-pi-controller-processor:
+	docker run --rm -p 5005:5005 pi-controller-processor:latest
 
-run-pi-agent:
-	docker run --rm -p 50051:50051 pi-agent:latest
+run-pi-controller:
+	docker run --rm -p 50051:50051 pi-controller:latest
 
-run-pi-agent-controller-processor:
-	docker run --rm -p 50052:50052 pi-agent-controller-processor:latest
+run-pi-gateway:
+	docker run --rm -p 50052:50052 pi-gateway:latest
 
 run-all:
 	docker container prune -f; docker-compose up --build --remove-orphans
 
 # [Prod] Installation commands
 deploy-agent: 
-	./script/install-pi-agent.sh
+	./script/install-pi-controller.sh
 
 # Stop all services
 stop-all:

@@ -10,7 +10,7 @@ import (
 
 	"github.com/gorilla/websocket"
 	amqp "github.com/rabbitmq/amqp091-go"
-	model "github.com/vincentvtran/pi-agent/pkg/model"
+	model "github.com/vincentvtran/pi-controller/pkg/model"
 )
 
 var (

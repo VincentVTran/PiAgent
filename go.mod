@@ -1,4 +1,4 @@
-module github.com/vincentvtran/pi-agent
+module github.com/vincentvtran/pi-controller
 
 go 1.22.4
 

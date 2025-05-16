@@ -14,7 +14,7 @@
 
 syntax = "proto3";
 
-option go_package = "github.com/vincentvtran/pi-agent/proto";
+option go_package = "github.com/vincentvtran/pi-controller/proto";
 
 package homeserver.proto;
 

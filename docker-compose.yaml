@@ -1,34 +1,34 @@
 version: '3.8'
 
 services:
-  pi-agent-controller:
+  pi-controller-processor:
     build:
       context: .
-      dockerfile: cmd/pi-agent-controller/Dockerfile
+      dockerfile: cmd/pi-controller-processor/Dockerfile
     ports:
       - "5005:5005"
-    container_name: pi-agent-controller
+    container_name: pi-controller-processor
     environment:
       - STAGE=local
 
-  pi-agent:
+  pi-controller:
     build:
       context: .
-      dockerfile: cmd/pi-agent/Dockerfile
+      dockerfile: cmd/pi-controller/Dockerfile
     ports:
       - "50051:50051"
-    container_name: pi-agent
+    container_name: pi-controller
     environment:
       - STAGE=local
 
-  pi-agent-controller-processor:
+  pi-gateway:
     build:
       context: .
-      dockerfile: cmd/pi-agent-controller-processor/Dockerfile
+      dockerfile: cmd/pi-gateway/Dockerfile
     ports:
       - "50052:50052"
-    container_name: pi-agent-controller-processor
+    container_name: pi-gateway
     depends_on:
-      - pi-agent
+      - pi-controller
     environment:
       - STAGE=local

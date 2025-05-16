@@ -10,8 +10,8 @@ import (
 	"time"
 
 	amqp "github.com/rabbitmq/amqp091-go"
-	pb "github.com/vincentvtran/pi-agent/api/types"
-	model "github.com/vincentvtran/pi-agent/pkg/model"
+	pb "github.com/vincentvtran/pi-controller/api/types"
+	model "github.com/vincentvtran/pi-controller/pkg/model"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
@@ -67,13 +67,13 @@ func consumeFromRabbitMQ(url, queue string) error {
 
 	// Consume messages from the queue
 	msgs, err := ch.Consume(
-		queue,                           // queue
-		"pi-agent-controller-processor", // consumer
-		true,                            // auto-ack
-		false,                           // exclusive
-		false,                           // no-local (deprecated in amqp091-go)
-		false,                           // no-wait
-		nil,                             // args
+		queue,        // queue
+		"pi-gateway", // consumer
+		true,         // auto-ack
+		false,        // exclusive
+		false,        // no-local (deprecated in amqp091-go)
+		false,        // no-wait
+		nil,          // args
 	)
 	if err != nil {
 		return fmt.Errorf("failed to register a consumer: %v", err)
