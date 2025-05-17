@@ -26,18 +26,4 @@ else
   sudo systemctl enable "${SERVICE_NAME}"
 fi
 
-# 4. Restart (or start) the service now
-echo "Restarting ${SERVICE_NAME}..."
-sudo systemctl restart "${SERVICE_NAME}"
-
-echo "${SERVICE_NAME} is now installed, enabled, and running."
-
-
-# Installing necessary dependencies
-go mod download
-
-# Building executable
-go build -o pi-controller ./cmd/pi-controller/main.go
-
-# Execute executable
-./pi-controller
+echo "${SERVICE_NAME} is now installed and enabled but not started."

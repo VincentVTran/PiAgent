@@ -39,8 +39,13 @@ run-all:
 	docker container prune -f; docker-compose up --build --remove-orphans
 
 # [Prod] Installation commands
-deploy-agent: 
-	./script/install-pi-controller.sh
+prod-run-pi-controller:
+	@echo "Running install script..."
+	bash ./script/install-pi-agent.sh
+	@echo "Building pi-controller..."
+	make build-pi-controller
+	@echo "Running pi-controller..."
+	make run-pi-controller
 
 # Stop all services
 stop-all:
