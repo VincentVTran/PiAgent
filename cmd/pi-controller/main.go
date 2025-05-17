@@ -57,7 +57,7 @@ func (s *server) ConfigureStream(ctx context.Context, in *pb.StreamRequest) (*pb
 		}
 	} else {
 		logger.Info("Stopping stream")
-		err := StartStream()
+		err := StopStream()
 		if err != nil {
 			log.Println("Error starting stream: ", err)
 		}

@@ -14,7 +14,7 @@ make_port_available() {
 PI_PORT=$(make_port_available 50051)  # Capture the output of the function
 
 # Start pi-controller in the background
-go run cmd/pi-controller/main.go --stage="local" --port=$PI_PORT &
-PI_PID=$!
-echo "Pi server started with PID $PI_PID on port $PI_PORT"
+go build -o pi-controller ./cmd/pi-controller/main.go
+
+sudo ./pi-controller --port $PI_PORT
 
