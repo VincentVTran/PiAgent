@@ -5,9 +5,11 @@ SERVICE_FILE="./installable/raspivid-stream.service"
 DEST_DIR="/etc/systemd/system"
 SERVICE_NAME="raspivid-stream.service"
 
-# 1. Copy the service file if it doesn't already exist
+# 1. Copy the service file, replacing it if it already exists
 if [ -f "${DEST_DIR}/${SERVICE_NAME}" ]; then
-  echo "${SERVICE_NAME} already exists in ${DEST_DIR}, skipping copy."
+  echo "${SERVICE_NAME} already exists in ${DEST_DIR}, replacing it."
+  sudo cp "${SERVICE_FILE}" "${DEST_DIR}/"
+  sudo chmod 644 "${DEST_DIR}/${SERVICE_NAME}"
 else
   echo "Copying ${SERVICE_FILE} to ${DEST_DIR}/"
   sudo cp "${SERVICE_FILE}" "${DEST_DIR}/"
@@ -26,4 +28,4 @@ else
   sudo systemctl enable "${SERVICE_NAME}"
 fi
 
-echo "${SERVICE_NAME} is now installed and enabled but not started."
+echo "${SERVICE_NAME} is now installed, updated, and enabled but not started."
