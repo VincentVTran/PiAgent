@@ -53,13 +53,15 @@ func (s *server) ConfigureStream(ctx context.Context, in *pb.StreamRequest) (*pb
 		logger.Info("Starting stream")
 		err := StartStream()
 		if err != nil {
-			log.Println("Error starting stream: ", err)
+			logger.Error(fmt.Sprintf("Error starting stream: %v", err.Error()))
+			return &pb.OperationResponse{ApiVersion: s.version, StatusCode: 200, Output: err.Error()}, nil
 		}
 	} else {
 		logger.Info("Stopping stream")
 		err := StopStream()
 		if err != nil {
-			log.Println("Error starting stream: ", err)
+			logger.Error(fmt.Sprintf("Error starting stream: %v", err.Error()))
+			return &pb.OperationResponse{ApiVersion: s.version, StatusCode: 200, Output: err.Error()}, nil
 		}
 	}
 	return &pb.OperationResponse{ApiVersion: s.version, StatusCode: 400, Output: "Successfully configured streamed"}, nil
