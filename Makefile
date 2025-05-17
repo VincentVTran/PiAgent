@@ -43,9 +43,9 @@ prod-run-pi-controller:
 	@echo "Running install script..."
 	bash ./script/install-pi-agent.sh
 	@echo "Building pi-controller..."
-	make build-pi-controller
-	@echo "Running pi-controller..."
-	make run-pi-controller
+	make build-local
+	@echo "Running pi controller..."
+	bash ./script/run-pi-controller.sh
 
 # Stop all services
 stop-all:
