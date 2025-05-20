@@ -25,6 +25,7 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -34,6 +35,7 @@ const _ = grpc.SupportPackageIsVersion9
 
 const (
 	PiAgentController_ConfigureStream_FullMethodName = "/homeserver.proto.PiAgentController/configureStream"
+	PiAgentController_RetrieveStatus_FullMethodName  = "/homeserver.proto.PiAgentController/retrieveStatus"
 )
 
 // PiAgentControllerClient is the client API for PiAgentController service.
@@ -44,6 +46,7 @@ const (
 // Service API definition
 type PiAgentControllerClient interface {
 	ConfigureStream(ctx context.Context, in *StreamRequest, opts ...grpc.CallOption) (*OperationResponse, error)
+	RetrieveStatus(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*OperationResponse, error)
 }
 
 type piAgentControllerClient struct {
@@ -64,6 +67,16 @@ func (c *piAgentControllerClient) ConfigureStream(ctx context.Context, in *Strea
 	return out, nil
 }
 
+func (c *piAgentControllerClient) RetrieveStatus(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*OperationResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(OperationResponse)
+	err := c.cc.Invoke(ctx, PiAgentController_RetrieveStatus_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // PiAgentControllerServer is the server API for PiAgentController service.
 // All implementations must embed UnimplementedPiAgentControllerServer
 // for forward compatibility.
@@ -72,6 +85,7 @@ func (c *piAgentControllerClient) ConfigureStream(ctx context.Context, in *Strea
 // Service API definition
 type PiAgentControllerServer interface {
 	ConfigureStream(context.Context, *StreamRequest) (*OperationResponse, error)
+	RetrieveStatus(context.Context, *emptypb.Empty) (*OperationResponse, error)
 	mustEmbedUnimplementedPiAgentControllerServer()
 }
 
@@ -84,6 +98,9 @@ type UnimplementedPiAgentControllerServer struct{}
 
 func (UnimplementedPiAgentControllerServer) ConfigureStream(context.Context, *StreamRequest) (*OperationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ConfigureStream not implemented")
+}
+func (UnimplementedPiAgentControllerServer) RetrieveStatus(context.Context, *emptypb.Empty) (*OperationResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RetrieveStatus not implemented")
 }
 func (UnimplementedPiAgentControllerServer) mustEmbedUnimplementedPiAgentControllerServer() {}
 func (UnimplementedPiAgentControllerServer) testEmbeddedByValue()                           {}
@@ -124,6 +141,24 @@ func _PiAgentController_ConfigureStream_Handler(srv interface{}, ctx context.Con
 	return interceptor(ctx, in, info, handler)
 }
 
+func _PiAgentController_RetrieveStatus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PiAgentControllerServer).RetrieveStatus(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PiAgentController_RetrieveStatus_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PiAgentControllerServer).RetrieveStatus(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // PiAgentController_ServiceDesc is the grpc.ServiceDesc for PiAgentController service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -134,6 +169,10 @@ var PiAgentController_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "configureStream",
 			Handler:    _PiAgentController_ConfigureStream_Handler,
+		},
+		{
+			MethodName: "retrieveStatus",
+			Handler:    _PiAgentController_RetrieveStatus_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

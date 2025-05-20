@@ -18,11 +18,13 @@ option go_package = "github.com/vincentvtran/pi-controller/proto";
 
 package homeserver.proto;
 
+import "google/protobuf/empty.proto";
 /**
  * Service API definition
  */
 service PiAgentController {
   rpc configureStream(StreamRequest) returns (OperationResponse) {}
+  rpc retrieveStatus(google.protobuf.Empty) returns (OperationResponse) {}
 }
 
 /**

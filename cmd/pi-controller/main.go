@@ -32,6 +32,7 @@ import (
 	"github.com/vincentvtran/pi-controller/pkg/logging"
 	"go.opentelemetry.io/contrib/bridges/otelslog"
 	"google.golang.org/grpc"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 var (
@@ -65,6 +66,23 @@ func (s *server) ConfigureStream(ctx context.Context, in *pb.StreamRequest) (*pb
 		}
 	}
 	return &pb.OperationResponse{ApiVersion: s.version, StatusCode: 400, Output: "Successfully configured streamed"}, nil
+}
+
+func (s *server) RetrieveStatus(ctx context.Context, _ *emptypb.Empty) (*pb.OperationResponse, error) {
+	logger.Info("Fetching current stream configuration")
+	cmd := exec.Command("systemctl", "is-active", "raspivid-stream")
+	output, err := cmd.Output()
+	if err != nil {
+		logger.Error("Error fetching stream status", "error", err.Error())
+		return &pb.OperationResponse{ApiVersion: s.version, StatusCode: 500, Output: "unknown"}, nil
+	}
+
+	status := "inactive"
+	if string(output) == "active\n" {
+		status = "active"
+	}
+
+	return &pb.OperationResponse{ApiVersion: s.version, StatusCode: 200, Output: status}, nil
 }
 
 // Local Function

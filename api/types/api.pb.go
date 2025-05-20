@@ -23,6 +23,7 @@ package proto
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
@@ -197,7 +198,7 @@ var File_api_types_api_proto protoreflect.FileDescriptor
 
 const file_api_types_api_proto_rawDesc = "" +
 	"\n" +
-	"\x13api/types/api.proto\x12\x10homeserver.proto\"o\n" +
+	"\x13api/types/api.proto\x12\x10homeserver.proto\x1a\x1bgoogle/protobuf/empty.proto\"o\n" +
 	"\rStreamRequest\x12\x1b\n" +
 	"\tclient_id\x18\x01 \x01(\tR\bclientId\x12A\n" +
 	"\n" +
@@ -210,9 +211,10 @@ const file_api_types_api_proto_rawDesc = "" +
 	"apiVersion\x12\x1f\n" +
 	"\vstatus_code\x18\x02 \x01(\x05R\n" +
 	"statusCode\x12\x16\n" +
-	"\x06output\x18\x03 \x01(\tR\x06output2n\n" +
+	"\x06output\x18\x03 \x01(\tR\x06output2\xbf\x01\n" +
 	"\x11PiAgentController\x12Y\n" +
-	"\x0fconfigureStream\x12\x1f.homeserver.proto.StreamRequest\x1a#.homeserver.proto.OperationResponse\"\x00B-Z+github.com/vincentvtran/pi-controller/protob\x06proto3"
+	"\x0fconfigureStream\x12\x1f.homeserver.proto.StreamRequest\x1a#.homeserver.proto.OperationResponse\"\x00\x12O\n" +
+	"\x0eretrieveStatus\x12\x16.google.protobuf.Empty\x1a#.homeserver.proto.OperationResponse\"\x00B-Z+github.com/vincentvtran/pi-controller/protob\x06proto3"
 
 var (
 	file_api_types_api_proto_rawDescOnce sync.Once
@@ -231,13 +233,16 @@ var file_api_types_api_proto_goTypes = []any{
 	(*StreamRequest)(nil),     // 0: homeserver.proto.StreamRequest
 	(*StreamParameter)(nil),   // 1: homeserver.proto.StreamParameter
 	(*OperationResponse)(nil), // 2: homeserver.proto.OperationResponse
+	(*emptypb.Empty)(nil),     // 3: google.protobuf.Empty
 }
 var file_api_types_api_proto_depIdxs = []int32{
 	1, // 0: homeserver.proto.StreamRequest.parameters:type_name -> homeserver.proto.StreamParameter
 	0, // 1: homeserver.proto.PiAgentController.configureStream:input_type -> homeserver.proto.StreamRequest
-	2, // 2: homeserver.proto.PiAgentController.configureStream:output_type -> homeserver.proto.OperationResponse
-	2, // [2:3] is the sub-list for method output_type
-	1, // [1:2] is the sub-list for method input_type
+	3, // 2: homeserver.proto.PiAgentController.retrieveStatus:input_type -> google.protobuf.Empty
+	2, // 3: homeserver.proto.PiAgentController.configureStream:output_type -> homeserver.proto.OperationResponse
+	2, // 4: homeserver.proto.PiAgentController.retrieveStatus:output_type -> homeserver.proto.OperationResponse
+	3, // [3:5] is the sub-list for method output_type
+	1, // [1:3] is the sub-list for method input_type
 	1, // [1:1] is the sub-list for extension type_name
 	1, // [1:1] is the sub-list for extension extendee
 	0, // [0:1] is the sub-list for field type_name
